@@ -2,7 +2,6 @@ package de.caritas.cob.agencyservice.api.admin.validation;
 
 import static de.caritas.cob.agencyservice.testHelper.TestConstants.CONSULTING_TYPE_SUCHT;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -17,13 +16,13 @@ import de.caritas.cob.agencyservice.useradminservice.generated.web.model.Consult
 import java.util.Collections;
 import java.util.stream.Collectors;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 public class DeleteAgencyValidatorTest {
 
   @InjectMocks
@@ -37,27 +36,25 @@ public class DeleteAgencyValidatorTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  @Test
+  @Test(expected = ConflictException.class)
   public void validate_Should_throwConflictException_When_agencyStillHasAConsultantAssigned() {
-    assertThrows(ConflictException.class, () -> {
-      when(this.userAdminService.getConsultantsOfAgency(any(), anyInt(), anyInt()))
-          .thenReturn(
-              this.easyRandom
-                  .objects(ConsultantAdminResponseDTO.class, 1)
-                  .collect(Collectors.toList()));
+    when(this.userAdminService.getConsultantsOfAgency(any()))
+        .thenReturn(
+            this.easyRandom
+                .objects(ConsultantAdminResponseDTO.class, 1)
+                .collect(Collectors.toList()));
 
-      easyRandom.nextObject(ExtendedConsultingTypeResponseDTO.class);
+    easyRandom.nextObject(ExtendedConsultingTypeResponseDTO.class);
 
-      Agency agency = this.easyRandom.nextObject(Agency.class);
-      agency.setConsultingTypeId(CONSULTING_TYPE_SUCHT);
-      this.deleteAgencyValidator.validate(agency);
-    });
+    Agency agency = this.easyRandom.nextObject(Agency.class);
+    agency.setConsultingTypeId(CONSULTING_TYPE_SUCHT);
+    this.deleteAgencyValidator.validate(agency);
   }
 
   @Test
   public void validate_Should_notThrowExceptions_When_agencyIsReadyToDelete()
       throws MissingConsultingTypeException {
-    when(this.userAdminService.getConsultantsOfAgency(any(), anyInt(), anyInt()))
+    when(this.userAdminService.getConsultantsOfAgency(any()))
         .thenReturn(Collections.emptyList());
 
     ExtendedConsultingTypeResponseDTO consultingTypeSettings = this.easyRandom.nextObject(ExtendedConsultingTypeResponseDTO.class);
