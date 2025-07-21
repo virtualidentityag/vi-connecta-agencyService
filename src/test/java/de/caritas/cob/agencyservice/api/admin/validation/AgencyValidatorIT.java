@@ -140,7 +140,7 @@ class AgencyValidatorIT {
   @Test
   void validate_Should_NotThrowInvalidOfflineStatusException_WhenUpdateAndOfflineStatusIsValid()
       throws MissingConsultingTypeException {
-    when(this.userAdminService.getConsultantsOfAgency(anyLong(), anyInt(), anyInt()))
+    when(this.userAdminService.getConsultantsOfAgency(anyLong()))
         .thenReturn(singletonList(mock(ConsultantAdminResponseDTO.class)));
 
     when(consultingTypeManager.getConsultingTypeSettings(0)).thenReturn(CONSULTING_TYPE_SETTINGS_SUCHT);

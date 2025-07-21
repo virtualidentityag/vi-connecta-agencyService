@@ -40,7 +40,7 @@ public class DeleteAgencyValidatorTest {
   @Test
   public void validate_Should_throwConflictException_When_agencyStillHasAConsultantAssigned() {
     assertThrows(ConflictException.class, () -> {
-      when(this.userAdminService.getConsultantsOfAgency(any(), anyInt(), anyInt()))
+      when(this.userAdminService.getConsultantsOfAgency(any()))
           .thenReturn(
               this.easyRandom
                   .objects(ConsultantAdminResponseDTO.class, 1)
@@ -57,7 +57,7 @@ public class DeleteAgencyValidatorTest {
   @Test
   public void validate_Should_notThrowExceptions_When_agencyIsReadyToDelete()
       throws MissingConsultingTypeException {
-    when(this.userAdminService.getConsultantsOfAgency(any(), anyInt(), anyInt()))
+    when(this.userAdminService.getConsultantsOfAgency(any()))
         .thenReturn(Collections.emptyList());
 
     ExtendedConsultingTypeResponseDTO consultingTypeSettings = this.easyRandom.nextObject(ExtendedConsultingTypeResponseDTO.class);
