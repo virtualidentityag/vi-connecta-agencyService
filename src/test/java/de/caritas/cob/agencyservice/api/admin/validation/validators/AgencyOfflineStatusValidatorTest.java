@@ -28,8 +28,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.jeasy.random.EasyRandom;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -115,7 +115,7 @@ class AgencyOfflineStatusValidatorTest {
         .thenReturn(numberOfAgencyPostcodeRanges);
     when(agencyRepository.findById(validateAgencyDto.getId()))
         .thenReturn(Optional.of(agency));
-    lenient().when(this.userAdminService.getConsultantsOfAgency(anyLong(), anyInt(), anyInt()))
+    lenient().when(this.userAdminService.getConsultantsOfAgency(anyLong()))
         .thenReturn(assignedConsultants);
     when(consultingTypeManager.getConsultingTypeSettings(anyInt())).thenReturn(consultingTypeSettings);
 
@@ -141,7 +141,7 @@ class AgencyOfflineStatusValidatorTest {
         .thenReturn(numberOfAgencyPostcodeRanges);
     when(agencyRepository.findById(validateAgencyDto.getId()))
         .thenReturn(Optional.of(AGENCY_SUCHT));
-    lenient().when(this.userAdminService.getConsultantsOfAgency(anyLong(), anyInt(), anyInt()))
+    lenient().when(this.userAdminService.getConsultantsOfAgency(anyLong()))
         .thenReturn(assignedConsultants);
     when(consultingTypeManager.getConsultingTypeSettings(anyInt())).thenReturn(consultingTypeSettings);
 
