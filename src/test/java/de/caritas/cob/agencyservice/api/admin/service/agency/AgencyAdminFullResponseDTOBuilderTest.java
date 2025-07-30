@@ -5,16 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.common.collect.Lists;
 import de.caritas.cob.agencyservice.api.model.AgencyAdminFullResponseDTO;
 import de.caritas.cob.agencyservice.api.model.AgencyAdminResponseDTO;
 import de.caritas.cob.agencyservice.api.model.AgencyDTO;
 import de.caritas.cob.agencyservice.api.model.AgencyLinks;
 import de.caritas.cob.agencyservice.api.model.DataProtectionContactDTO;
 import de.caritas.cob.agencyservice.api.model.HalLink.MethodEnum;
+import de.caritas.cob.agencyservice.api.model.TopicDTO;
 import de.caritas.cob.agencyservice.api.repository.agency.Agency;
 import de.caritas.cob.agencyservice.api.repository.agency.DataProtectionResponsibleEntity;
 import de.caritas.cob.agencyservice.api.repository.agency.Gender;
+import de.caritas.cob.agencyservice.api.repository.agencytopic.AgencyTopic;
 import de.caritas.cob.agencyservice.api.util.JsonConverter;
+import org.assertj.core.groups.Tuple;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +37,7 @@ class AgencyAdminFullResponseDTOBuilderTest {
     this.agency.setDataProtectionAgencyResponsibleContactData(JsonConverter.convertToJson(new DataProtectionContactDTO()));
     this.agency.setDataProtectionOfficerContactData(JsonConverter.convertToJson(new DataProtectionContactDTO()));
     this.agency.setDataProtectionAlternativeContactData(JsonConverter.convertToJson(new DataProtectionContactDTO()));
+    this.agency.setAgencyTopics(Lists.newArrayList(AgencyTopic.builder().topicId(1L).topicData(new TopicDTO().id(1L).name("topic name")).build()));
     this.agency.setTenantId(TENANT_ID);
     this.agencyAdminFullResponseDTOBuilder = new AgencyAdminFullResponseDTOBuilder(agency);
     this.agency.setCounsellingRelations(AgencyDTO.CounsellingRelationsEnum.PARENTAL_COUNSELLING.getValue() + "," + AgencyDTO.CounsellingRelationsEnum.RELATIVE_COUNSELLING.getValue());
@@ -62,6 +67,8 @@ class AgencyAdminFullResponseDTOBuilderTest {
     assertEquals(String.valueOf(agency.getCreateDate()), result.getEmbedded().getCreateDate());
     assertEquals(String.valueOf(agency.getUpdateDate()), result.getEmbedded().getUpdateDate());
     assertEquals(String.valueOf(agency.getDeleteDate()), result.getEmbedded().getDeleteDate());
+    assertThat(result.getEmbedded().getTopics()).extracting("id", "name").containsExactly(
+        Tuple.tuple(1L, "topic name"));
   }
 
   @Test
@@ -109,16 +116,16 @@ class AgencyAdminFullResponseDTOBuilderTest {
     assertEquals(TENANT_ID, result.getEmbedded().getTenantId());
     assertThat(agencyLinks.getSelf()).isNotNull();
     assertThat(agencyLinks.getSelf().getMethod()).isEqualTo(MethodEnum.GET);
-    assertThat(agencyLinks.getSelf().getHref()).isEqualTo(String.format("/agencyadmin/agencies/%s", agency.getId()));
+    assertThat(agencyLinks.getSelf().getHref()).isEqualTo("/agencyadmin/agencies/%s".formatted(agency.getId()));
     assertThat(agencyLinks.getDelete()).isNotNull();
     assertThat(agencyLinks.getDelete().getMethod()).isEqualTo(MethodEnum.DELETE);
-    assertThat(agencyLinks.getDelete().getHref()).isEqualTo(String.format("/agencyadmin/agencies/%s", agency.getId()));
+    assertThat(agencyLinks.getDelete().getHref()).isEqualTo("/agencyadmin/agencies/%s".formatted(agency.getId()));
     assertThat(agencyLinks.getUpdate()).isNotNull();
     assertThat(agencyLinks.getUpdate().getMethod()).isEqualTo(MethodEnum.PUT);
-    assertThat(agencyLinks.getUpdate().getHref()).isEqualTo(String.format("/agencyadmin/agencies/%s", agency.getId()));
+    assertThat(agencyLinks.getUpdate().getHref()).isEqualTo("/agencyadmin/agencies/%s".formatted(agency.getId()));
     assertThat(agencyLinks.getPostcodeRanges()).isNotNull();
     assertThat(agencyLinks.getPostcodeRanges().getMethod()).isEqualTo(MethodEnum.GET);
-    assertThat(agencyLinks.getPostcodeRanges().getHref()).isEqualTo(String.format("/agencyadmin/postcoderanges/%s", this.agency.getId()));
+    assertThat(agencyLinks.getPostcodeRanges().getHref()).isEqualTo("/agencyadmin/postcoderanges/%s".formatted(this.agency.getId()));
   }
 
 }
